@@ -1,11 +1,11 @@
 resource_name :consul_exporter
 
-property :allow_stale, [TrueClass, FalseClass], default: false
+property :allow_stale, [true, false], default: false
 property :ca_file, String
 property :cert_file, String
-property :consul.health_summary, [TrueClass, FalseClass], default: true
+property :consul.health_summary, [true, false], default: true
 property :consul.key_file, String
-property :consul.require_consistent, [TrueClass, FalseClass], default: false
+property :consul.require_consistent, [true, false], default: false
 property :server, String, default: 'http://localhost:8500'
 property :server_name, String
 property :timeout, String, default: '500ms'
@@ -15,67 +15,67 @@ property :web_listen_address, String, default: ':9107'
 property :web_telemetry_path, String, default: '/metrics'
 
 action :install do
-    # A setting for chef discovery
-    node.default['prometheus_exporters']['consul']['enabled'] = true
+  # A setting for chef discovery
+  node.default['prometheus_exporters']['consul']['enabled'] = true
 
-    # Options
-    options = "--consul.allow_stale=#{new_resource.allow_stale}" if new_resource.allow_stale
-    options += " --consul.ca-file=#{new_resource.ca_file}" if new_resource.ca_file
-    options += " --consul.cert-file=#{new_resource.cert_file}" if new_resource.client_cert
-    options += " --consul.health-summary=#{new_resource.health_summary}" if new_resource.health_summary
-    options += " --consul.key-file=#{new_resource.key_file}" if new_resource.key_file
-    options += " --consul.require-consistent=#{new_resource.require_consistent}" if new_resource.require_consistent
-    options += " --consul.server=#{new_resource.server}"
-    options += " --consul.server-name=#{new_resource.server_name}"
-    options += " --consul.timeout=#{new_resource.timeout}"
-    options += " --log.format=#{new_resource.log_format}"
-    options += " --log.level=#{new_resource.log_level}"
-    options += " --web.listen-address=#{new_resource.web_listen_address}"
-    options += " --web.telemetry-path=#{new_resource.web_telemetry_path}"
-  
-    service_name = "consul_exporter_#{new_resource.name}"
-    exporter_dir = "/opt/consul_exporter-#{node['prometheus_exporters']['consul']['version']}.linux-amd64"
+  # Options
+  options = "--consul.allow_stale=#{new_resource.allow_stale}" if new_resource.allow_stale
+  options += " --consul.ca-file=#{new_resource.ca_file}" if new_resource.ca_file
+  options += " --consul.cert-file=#{new_resource.cert_file}" if new_resource.client_cert
+  options += " --consul.health-summary=#{new_resource.health_summary}" if new_resource.health_summary
+  options += " --consul.key-file=#{new_resource.key_file}" if new_resource.key_file
+  options += " --consul.require-consistent=#{new_resource.require_consistent}" if new_resource.require_consistent
+  options += " --consul.server=#{new_resource.server}"
+  options += " --consul.server-name=#{new_resource.server_name}"
+  options += " --consul.timeout=#{new_resource.timeout}"
+  options += " --log.format=#{new_resource.log_format}"
+  options += " --log.level=#{new_resource.log_level}"
+  options += " --web.listen-address=#{new_resource.web_listen_address}"
+  options += " --web.telemetry-path=#{new_resource.web_telemetry_path}"
 
-    directory exporter_dir do
-        owner 'root'
-        group 'root'
-        mode '0755'
-        recursive true
-        action :create
-    end
+  service_name = "consul_exporter_#{new_resource.name}"
+  exporter_dir = "/opt/consul_exporter-#{node['prometheus_exporters']['consul']['version']}.linux-amd64"
 
-    # Download the exporter binary
-    remote_file 'consul_exporter' do
-        path "#{Chef::Config[:file_cache_path]}/consul_exporter.tar.gz"
-        owner 'root'
-        group 'root'
-        mode '0644'
-        source node['prometheus_exporters']['consul']['url']
-        checksum node['prometheus_exporters']['consul']['checksum']
-        notifies :restart, "service[#{service_name}]"
-    end
+  directory exporter_dir do
+    owner 'root'
+    group 'root'
+    mode '0755'
+    recursive true
+    action :create
+  end
 
-    bash 'untar consul_exporter' do
-        code "tar -xzf #{Chef::Config[:file_cache_path]}/consul_exporter.tar.gz -C #{exporter_dir}"
-        action :nothing
-        subscribes :run, 'remote_file[consul_exporter]', :immediately
-    end
-    
-    link '/usr/local/sbin/consul_exporter' do
-        to "/opt/consul_exporter-#{node['prometheus_exporters']['consul']['version']}.linux-amd64/consul_exporter"
-    end
-    
-    # Configure to run as a service
-    service service_name do
-        action :nothing
-    end
+  # Download the exporter binary
+  remote_file 'consul_exporter' do
+    path "#{Chef::Config[:file_cache_path]}/consul_exporter.tar.gz"
+    owner 'root'
+    group 'root'
+    mode '0644'
+    source node['prometheus_exporters']['consul']['url']
+    checksum node['prometheus_exporters']['consul']['checksum']
+    notifies :restart, "service[#{service_name}]"
+  end
+
+  bash 'untar consul_exporter' do
+    code "tar -xzf #{Chef::Config[:file_cache_path]}/consul_exporter.tar.gz -C #{exporter_dir}"
+    action :nothing
+    subscribes :run, 'remote_file[consul_exporter]', :immediately
+  end
+
+  link '/usr/local/sbin/consul_exporter' do
+    to "/opt/consul_exporter-#{node['prometheus_exporters']['consul']['version']}.linux-amd64/consul_exporter"
+  end
+
+  # Configure to run as a service
+  service service_name do
+    action :nothing
+  end
 
   case node['init_package']
   when /init/
-    %w[
+    %w(
       /var/run/prometheus
       /var/log/prometheus
-    ].each do |dir|
+    ).each do |dir|
       directory dir do
         owner 'root'
         group 'root'
