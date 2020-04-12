@@ -3,9 +3,9 @@ resource_name :consul_exporter
 property :allow_stale, [true, false], default: false
 property :ca_file, String
 property :cert_file, String
-property :consul.health_summary, [true, false], default: true
-property :consul.key_file, String
-property :consul.require_consistent, [true, false], default: false
+property :health_summary, [true, false], default: true
+property :key_file, String
+property :require_consistent, [true, false], default: false
 property :server, String, default: 'http://localhost:8500'
 property :server_name, String
 property :timeout, String, default: '500ms'
