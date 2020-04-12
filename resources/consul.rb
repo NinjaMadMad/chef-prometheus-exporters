@@ -21,7 +21,7 @@ action :install do
   # Options
   options = "--consul.allow_stale=#{new_resource.allow_stale}" if new_resource.allow_stale
   options += " --consul.ca-file=#{new_resource.ca_file}" if new_resource.ca_file
-  options += " --consul.cert-file=#{new_resource.cert_file}" if new_resource.client_cert
+  options += " --consul.cert-file=#{new_resource.cert_file}" if new_resource.cert_file
   options += " --consul.health-summary=#{new_resource.health_summary}" if new_resource.health_summary
   options += " --consul.key-file=#{new_resource.key_file}" if new_resource.key_file
   options += " --consul.require-consistent=#{new_resource.require_consistent}" if new_resource.require_consistent
