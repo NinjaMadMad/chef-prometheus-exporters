@@ -1,6 +1,6 @@
 ## TL;DR
 
-To run standart tests for this code please run:
+To run standard tests for this code please run:
 
 ```shell
 foodcritic -f any . \
