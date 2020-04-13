@@ -4,13 +4,14 @@ property :allow_stale, [true, false], default: false
 property :ca_file, String
 property :cert_file, String
 property :health_summary, [true, false], default: true
+property :log_format, String, default: 'logfmt'
+property :log_level, String, default: 'info'
 property :key_file, String
 property :require_consistent, [true, false], default: false
 property :server, String, default: 'http://localhost:8500'
 property :server_name, String
 property :timeout, String, default: '500ms'
-property :log_format, String, default: 'logfmt'
-property :log_level, String, default: 'info'
+property :user, String, default: 'root'
 property :web_listen_address, String, default: ':9107'
 property :web_telemetry_path, String, default: '/metrics'
 
@@ -18,31 +19,21 @@ action :install do
   # A setting for chef discovery
   node.default['prometheus_exporters']['consul']['enabled'] = true
 
-  # Options
-  options = "--consul.allow_stale=#{new_resource.allow_stale}" if new_resource.allow_stale
+  options = "--web.listen-address=#{new_resource.web_listen_address}"
+  options += " --web.telemetry-path=#{new_resource.web_telemetry_path}"
+  options += " --log.level=#{new_resource.log_level}"
+  options += " --log.format=#{new_resource.log_format}"
+  options += " --consul.server=#{new_resource.server}"
+  options += " --consul.health-summary" if new_resource.health_summary
+  options += " --consul.require-consistent" if new_resource.require_consistent
   options += " --consul.ca-file=#{new_resource.ca_file}" if new_resource.ca_file
   options += " --consul.cert-file=#{new_resource.cert_file}" if new_resource.cert_file
-  options += " --consul.health-summary=#{new_resource.health_summary}" if new_resource.health_summary
   options += " --consul.key-file=#{new_resource.key_file}" if new_resource.key_file
-  options += " --consul.require-consistent=#{new_resource.require_consistent}" if new_resource.require_consistent
-  options += " --consul.server=#{new_resource.server}"
-  options += " --consul.server-name=#{new_resource.server_name}"
+  options += " --consul.allow-stale=#{new_resource.allow_stale}" if new_resource.allow_stale
   options += " --consul.timeout=#{new_resource.timeout}"
-  options += " --log.format=#{new_resource.log_format}"
-  options += " --log.level=#{new_resource.log_level}"
-  options += " --web.listen-address=#{new_resource.web_listen_address}"
-  options += " --web.telemetry-path=#{new_resource.web_telemetry_path}"
+  options += ' --consul.server-name' if new_resource.server_name
 
   service_name = "consul_exporter_#{new_resource.name}"
-  exporter_dir = "/opt/consul_exporter-#{node['prometheus_exporters']['consul']['version']}.linux-amd64"
-
-  directory exporter_dir do
-    owner 'root'
-    group 'root'
-    mode '0755'
-    recursive true
-    action :create
-  end
 
   # Download the exporter binary
   remote_file 'consul_exporter' do
@@ -56,7 +47,7 @@ action :install do
   end
 
   bash 'untar consul_exporter' do
-    code "tar -xzf #{Chef::Config[:file_cache_path]}/consul_exporter.tar.gz -C #{exporter_dir}"
+    code "tar -xzf #{Chef::Config[:file_cache_path]}/consul_exporter.tar.gz -C /opt"
     action :nothing
     subscribes :run, 'remote_file[consul_exporter]', :immediately
   end
