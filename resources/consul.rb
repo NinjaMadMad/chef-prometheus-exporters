@@ -24,8 +24,8 @@ action :install do
   options += " --log.level=#{new_resource.log_level}"
   options += " --log.format=#{new_resource.log_format}"
   options += " --consul.server=#{new_resource.server}"
-  options += " --consul.health-summary" if new_resource.health_summary
-  options += " --consul.require-consistent" if new_resource.require_consistent
+  options += ' --consul.health-summary' if new_resource.health_summary
+  options += ' --consul.require-consistent' if new_resource.require_consistent
   options += " --consul.ca-file=#{new_resource.ca_file}" if new_resource.ca_file
   options += " --consul.cert-file=#{new_resource.cert_file}" if new_resource.cert_file
   options += " --consul.key-file=#{new_resource.key_file}" if new_resource.key_file
