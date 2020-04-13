@@ -1,6 +1,5 @@
 resource_name :consul_exporter
 
-property :allow_stale, [true, false], default: true
 property :ca_file, String
 property :cert_file, String
 property :health_summary, [true, false], default: true
@@ -8,7 +7,7 @@ property :log_format, String, default: 'logfmt'
 property :log_level, String, default: 'info'
 property :key_file, String
 property :require_consistent, [true, false], default: false
-property :server, String, default: 'http://localhost:8500'
+property :server, String, default: 'localhost:8500'
 property :server_name, String
 property :timeout, String, default: '500ms'
 property :user, String, default: 'root'
@@ -25,11 +24,10 @@ action :install do
   options += " --log.format=#{new_resource.log_format}"
   options += " --consul.server=#{new_resource.server}"
   options += ' --consul.health-summary' if new_resource.health_summary
-  options += ' --consul.require-consistent' if new_resource.require_consistent
+  options += ' --consul.require_consistent' if new_resource.require_consistent
   options += " --consul.ca-file=#{new_resource.ca_file}" if new_resource.ca_file
   options += " --consul.cert-file=#{new_resource.cert_file}" if new_resource.cert_file
   options += " --consul.key-file=#{new_resource.key_file}" if new_resource.key_file
-  options += " --consul.allow-stale=#{new_resource.allow_stale}" if new_resource.allow_stale
   options += " --consul.timeout=#{new_resource.timeout}"
   options += ' --consul.server-name' if new_resource.server_name
 

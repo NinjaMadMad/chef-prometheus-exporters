@@ -77,7 +77,6 @@ blackbox_exporter 'main'
 
 ## consul_exporter
 
-* `allow_stale` Allows any Consul server (non-leader) to service a read. (default: true) 
 * `ca_file` File path to a PEM-encoded certificate authority used to validate the authenticity of a server certificate.
 * `cert_file` File path to a PEM-encoded certificate used with the private key to verify the exporter's authenticity.
 * `key_file` File path to a PEM-encoded private key used with the certificate to verify the exporter's authenticity.
