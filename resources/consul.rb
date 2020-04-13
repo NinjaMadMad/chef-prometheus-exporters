@@ -1,6 +1,6 @@
 resource_name :consul_exporter
 
-property :allow_stale, [true, false], default: false
+property :allow_stale, [true, false], default: true
 property :ca_file, String
 property :cert_file, String
 property :health_summary, [true, false], default: true
