@@ -1,4 +1,6 @@
 # prometheus_exporters
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FNinjaMadMad%2Fchef-prometheus-exporters.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FNinjaMadMad%2Fchef-prometheus-exporters?ref=badge_shield)
+
 
 Cookbook to install and configure various Prometheus exporters on systems to be monitored by Prometheus.
 
@@ -514,3 +516,7 @@ This query will return all nodes with configured node exporters which can be use
 # Known Issues
 
 * The snmp_exporter requires a configuration file that is usually created by a config generator. Currently this functionality must be provided by a wrapper cookbook.
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FNinjaMadMad%2Fchef-prometheus-exporters.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FNinjaMadMad%2Fchef-prometheus-exporters?ref=badge_large)
